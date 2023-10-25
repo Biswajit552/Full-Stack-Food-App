@@ -63,9 +63,17 @@ const serviceAccountKey = require('./serviceAccountKey.json');
   
 
   const userRoute = require('./routes/user')
-  app.use("/api/users",userRoute)
+  app.use("/api/users",userRoute);
+
   const productRoute = require("./routes/products");
   app.use("/api/products/", productRoute); 
+
+  const hotelRoute = require('./routes/hotel')
+  app.use("/api/hotels", hotelRoute)
+
+
+
+
 
 
   exports.app = functions.https.onRequest(app);

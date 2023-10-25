@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { Logo } from "../assets";
 import { isActiveStyles, isNotActivestyles } from "../utils/styles";
 
-const DBLeftSection = () => {
+const DBLeftHotel = () => {
   return (
     <div
       className="h-full py-12 flex flex-col bg-cardOverlay 
@@ -17,7 +17,7 @@ const DBLeftSection = () => {
       <hr />
       <ul className="flex flex-col gap-4">
         <NavLink
-          to={"/dashboard/home"}
+          to={"/dashboardHotel/home"}
           className={({ isActive }) =>
             isActive
               ? `${isActiveStyles} px-4 py-2 border-l-8 border-red-500`
@@ -28,7 +28,7 @@ const DBLeftSection = () => {
         </NavLink>
 
         <NavLink
-          to={"/dashboard/orders"}
+          to={"/dashboardHotel/orders"}
           className={({ isActive }) =>
             isActive
               ? `${isActiveStyles} px-4 py-2 border-l-8 border-red-500`
@@ -38,44 +38,36 @@ const DBLeftSection = () => {
           Orders
         </NavLink>
         <NavLink
-          to={"/dashboard/items"}
+          to={"/dashboardHotel/hotels"}
           className={({ isActive }) =>
             isActive
               ? `${isActiveStyles} px-4 py-2 border-l-8 border-red-500`
               : isNotActivestyles
           }
         >
-          Items
+          Hotels
         </NavLink>
         <NavLink
-          to={"/dashboard/newItem"}
+          to={"/dashboardHotel/newhotels"}
           className={({ isActive }) =>
             isActive
               ? `${isActiveStyles} px-4 py-2 border-l-8 border-red-500`
               : isNotActivestyles
           }
         >
-          Add New Item
+          Add New Hotels
         </NavLink>
+        
         <NavLink
-          to={"/dashboard/hotels"}
+          to={"/dashboardHotel/photos"}
           className={({ isActive }) =>
             isActive
               ? `${isActiveStyles} px-4 py-2 border-l-8 border-red-500`
               : isNotActivestyles
           }
         >
-          Add New Hotel
-        </NavLink>
-        <NavLink
-          to={"/dashboard/users"}
-          className={({ isActive }) =>
-            isActive
-              ? `${isActiveStyles} px-4 py-2 border-l-8 border-red-500`
-              : isNotActivestyles
-          }
-        >
-          Users
+            Photos
+          
         </NavLink>
       </ul>
        <div className="w-full items-center justify-center flex h-225 mt-auto px-2">
@@ -92,4 +84,4 @@ const DBLeftSection = () => {
   );
 };
 
-export default DBLeftSection;
+export default DBLeftHotel;

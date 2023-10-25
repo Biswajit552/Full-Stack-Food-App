@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import {Header, OrderData} from '../components'
+import {BookingData, Header, OrderData} from '../components'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllOrder } from '../api'
+import { getAllBooking, getAllOrder } from '../api'
 import { setOrders } from '../context/actions/ordersAction'
+import { setBookings } from '../context/actions/bookingActions'
 
 const UserOrder = () => {
   const user = useSelector((state)=>state.user)
   const orders = useSelector ((state)=>state.orders)
+  const bookings = useSelector ((state)=>state.bookings)
+
 
   const dispatch = useDispatch();
   const [userOrders, setUserOrders] = useState(null)
+  const [userBookings, setUserBookings] = useState(null)
+
 
   useEffect(()=>{
     if(!orders){
@@ -19,6 +24,18 @@ const UserOrder = () => {
       });
     }else{
       setUserOrders(orders.filter((data)=>data.userId === user?.user_id));
+    }
+  },[orders]);
+
+  //bookings
+  useEffect(()=>{
+    if(!bookings){
+      getAllBooking().then((data) => {
+        dispatch(setBookings(data));
+        setUserBookings(data.filter((item)=> item.userId === user?.user_id));
+      });
+    }else{
+      setUserBookings(bookings.filter((data)=>data.userId === user?.user_id));
     }
   },[orders]);
 
@@ -34,8 +51,16 @@ const UserOrder = () => {
             <h1 className="text-[72px] text-headingColor font-bold">No Data</h1>
 
       </>}
+      {userBookings?.length >0 ? userBookings.map((item, i)=>(
+        <BookingData key={i} index={i} data={item} admin={false}/>
+      )):
+      <>
+            <h1 className="text-[72px] text-headingColor font-bold">No Data</h1>
+
+      </>}
       </div>
-    </main>  )
+    </main>
+      )
 }
 
 export default UserOrder

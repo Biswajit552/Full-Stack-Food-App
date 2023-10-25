@@ -22,6 +22,27 @@ export {default as CheckOutSuccess } from "./CheckOutSuccess";
 export {default as OrderData } from "./OrderData";
 export {default as UserOrder } from "./UserOrder";
 export {default as AboutUs } from "./AboutUs";
+export {default as DBRightHotel } from "./DBRightHotel";
+export {default as DBLeftHotel } from "./DBLeftHotel";
+export {default as DBAddHotel } from "./DBAddHotel";
+export {default as DBHotelItem } from "./DBHotelItem";
+export {default as DBHotelHome } from "./DBHotelHome";
+export {default as Hotelhome } from "./Hotelhome";
+export {default as HotelSlider } from "./HotelSlider";
+export {default as HSlider } from "./HSlider";
+export {default as HotelSliderCard } from "./HotelSliderCard";
+export {default as HotelFilter } from "./HotelFilter";
+export {default as HotelCart } from "./HotelCart";
+export {default as BookingData } from "./BookingData";
+export {default as DBBookings } from "./DBBookings";
+
+
+
+
+
+
+
+
 
 
 

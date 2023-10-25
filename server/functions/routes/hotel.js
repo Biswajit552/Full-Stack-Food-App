@@ -1,56 +1,57 @@
 const router = require("express").Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
-const express = require("express");
-db.settings({ ignoreUndefinedProperties: true });
 const stripe = require("stripe")(process.env.STRIPE_KEY);
+const express = require("express");
 
-router.post("/create", async (req, res) => {
-  try {
-    const id = Date.now();
-    const data = {
-      productId: id,
-      product_name: req.body.product_name,
-      product_category: req.body.product_category,
-      product_price: req.body.product_price,
-      imageURL: req.body.imageURL,
-    };
-    const response = await db.collection("products").doc(`/${id}/`).set(data);
-    return res.status(200).send({ success: true, data: response });
-  } catch (err) {
-    return res.send({ success: false, msg: `Error: ${err}` });
-  }
-});
 
-//get all the products
-router.get("/all", async (req, res) => {
-  (async () => {
+
+router.post("/add", async (req, res) => {
     try {
-      let query = db.collection("products");
-      let response = [];
-      await query.get().then((querysnap) => {
-        let docs = querysnap.docs;
-        docs.map((doc) => {
-          response.push({ ...doc.data() });
-        });
-        return response;
-      });
+      const id = Date.now();
+      const data = {
+        hotelId: id,
+        hotel_name: req.body.hotel_name,
+        hotel_category: req.body.hotel_category,
+        hotel_price: req.body.hotel_price,
+        imageURL: req.body.imageURL,
+      };
+      const response = await db.collection("hotels").doc(`/${id}/`).set(data);
       return res.status(200).send({ success: true, data: response });
     } catch (err) {
-      return res.send({
-        success: false,
-        msg: `Error this can slove problem: ${err}`,
-      });
+      return res.send({ success: false, msg: `Error: ${err}` });
     }
-  })();
-});
-//delete a product in item section code
-router.delete("/delete/:productId", async (req, res) => {
-  const productId = req.params.productId;
+  });
+
+  router.get("/all", async (req, res) => {
+    (async () => {
+      try {
+        let query = db.collection("hotels");
+        let response = [];
+        await query.get().then((querysnap) => {
+          let docs = querysnap.docs;
+          docs.map((doc) => {
+            response.push({ ...doc.data() });
+          });
+          return response;
+        });
+        return res.status(200).send({ success: true, data: response });
+      } catch (err) {
+        return res.send({
+          success: false,
+          msg: `Error this can slove problem: ${err}`,
+        });
+      }
+    })();
+  });
+  
+  //delete a product in item section code
+router.delete("/delete/:hotelId", async (req, res) => {
+  const hotelId = req.params.hotelId;
   try {
     await db
-      .collection("products")
-      .doc(`/${productId}/`)
+      .collection("hotels")
+      .doc(`/${hotelId}/`)
       .delete()
       .then((result) => {
         return res.status(200).send({ success: true, data: result });
@@ -60,112 +61,60 @@ router.delete("/delete/:productId", async (req, res) => {
   }
 });
 
-//create a cart
-router.post("/addToCart/:userId", async (req, res) => {
+//create a Booking
+router.post("/addToBook/:userId", async (req, res) => {
   const userId = req.params.userId;
-  const productId = req.body.productId;
+  const hotelId = req.body.hotelId;
   try {
     const doc = await db
-      .collection("cartItems")
+      .collection("BookItems")
       .doc(`/${userId}/`)
-      .collection("items")
-      .doc(`/${productId}/`)
+      .collection("books")
+      .doc(`/${hotelId}/`)
       .get();
 
     if (doc.data()) {
       const quantity = doc.data().quantity + 1;
       const updatedItem = await db
-        .collection("cartItems")
+        .collection("BookItems")
         .doc(`/${userId}/`)
-        .collection("items")
-        .doc(`/${productId}/`)
+        .collection("books")
+        .doc(`/${hotelId}/`)
         .update({ quantity });
       return res.status(200).send({ success: true, data: updatedItem });
     } else {
       const data = {
-        productId: productId,
-        product_name: req.body.product_name,
-        product_category: req.body.product_category,
-        product_price: req.body.product_price,
+        hotelId: hotelId,
+        hotel_name: req.body.hotel_name,
+        hotel_category: req.body.hotel_category,
+        hotel_price: req.body.hotel_price,
         imageURL: req.body.imageURL,
         quantity: 1,
       };
 
-      const addItem = await db
-        .collection("cartItems")
+      const addBook = await db
+        .collection("BookItems")
         .doc(`/${userId}/`)
-        .collection("items")
-        .doc(`/${productId}/`)
+        .collection("books")
+        .doc(`/${hotelId}/`)
         .set(data);
-      return res.status(200).send({ success: true, data: addItem });
+      return res.status(200).send({ success: true, data: addBook });
     }
   } catch (err) {
     return res.send({ success: false, msg: `Error: ${err}` });
   }
 });
 
-//update cart to increase and decrease the quantity
 
-router.post("/updateCart/:user_id", async (req, res) => {
-  const userId = req.params.user_id;
-  const productId = req.query.productId;
-  const type = req.query.type;
-
-  try {
-    const doc = await db
-      .collection("cartItems")
-      .doc(`/${userId}/`)
-      .collection("items")
-      .doc(`/${productId}/`)
-      .get();
-
-    if (doc.data()) {
-      if (type === "increment") {
-        const quantity = doc.data().quantity + 1;
-        const updatedItem = await db
-          .collection("cartItems")
-          .doc(`/${userId}/`)
-          .collection("items")
-          .doc(`/${productId}/`)
-          .update({ quantity });
-        return res.status(200).send({ success: true, data: updatedItem });
-      } else {
-        if (doc.data().quantity === 1) {
-          await db
-            .collection("cartItems")
-            .doc(`/${userId}/`)
-            .collection("items")
-            .doc(`/${productId}/`)
-            .delete()
-            .then((result) => {
-              return res.status(200).send({ success: true, data: result });
-            });
-        } else {
-          const quantity = doc.data().quantity - 1;
-          const updatedItem = await db
-            .collection("cartItems")
-            .doc(`/${userId}/`)
-            .collection("items")
-            .doc(`/${productId}/`)
-            .update({ quantity });
-          return res.status(200).send({ success: true, data: updatedItem });
-        }
-      }
-    }
-  } catch (err) {
-    return res.send({ success: false, msg: `Error: ${err}` });
-  }
-});
-
-//get all the cartitems for that user
-router.get("/getCartItems/:user_id", async (req, res) => {
+//get all
+router.get("/getBookItems/:user_id", async (req, res) => {
   const userId = req.params.user_id;
   (async () => {
     try {
       let query = db
-        .collection("cartItems")
+        .collection("BookItems")
         .doc(`${userId}/`)
-        .collection("items");
+        .collection("books");
       let response = [];
 
       await query.get().then((querysnap) => {
@@ -183,29 +132,81 @@ router.get("/getCartItems/:user_id", async (req, res) => {
   })();
 });
 
+//update cart to increase and decrease the quantity
+
+router.post("/updateBook/:user_id", async (req, res) => {
+  const userId = req.params.user_id;
+  const hotelId = req.query.hotelId;
+  const type = req.query.type;
+
+  try {
+    const doc = await db
+      .collection("BookItems")
+      .doc(`/${userId}/`)
+      .collection("books")
+      .doc(`/${hotelId}/`)
+      .get();
+
+    if (doc.data()) {
+      if (type === "increment") {
+        const quantity = doc.data().quantity + 1;
+        const updatedItem = await db
+          .collection("BookItems")
+          .doc(`/${userId}/`)
+          .collection("books")
+          .doc(`/${hotelId}/`)
+          .update({ quantity });
+        return res.status(200).send({ success: true, data: updatedItem });
+      } else {
+        if (doc.data().quantity === 1) {
+          await db
+            .collection("BookItems")
+            .doc(`/${userId}/`)
+            .collection("books")
+            .doc(`/${hotelId}/`)
+            .delete()
+            .then((result) => {
+              return res.status(200).send({ success: true, data: result });
+            });
+        } else {
+          const quantity = doc.data().quantity - 1;
+          const updatedItem = await db
+            .collection("BookItems")
+            .doc(`/${userId}/`)
+            .collection("books")
+            .doc(`/${hotelId}/`)
+            .update({ quantity });
+          return res.status(200).send({ success: true, data: updatedItem });
+        }
+      }
+    }
+  } catch (err) {
+    return res.send({ success: false, msg: `Error: ${err}` });
+  }
+});
 
 
 router.post("/create-checkout-session", async (req, res) => {
   const customer = await stripe.customers.create({
     metadata: {
       user_id: req.body.data.user.user_id,
-      cart: JSON.stringify(req.body.data.cart),
+      book: JSON.stringify(req.body.data.book),
       total: req.body.data.total,
     },
   });
 
-  const line_items = req.body.data.cart.map((item) => {
+  const line_items = req.body.data.book.map((item) => {
     return {
       price_data: {
         currency: "inr",
         product_data: {
-          name: item.product_name,
+          name: item.hotel_name,
           images: [item.imageURL],
           metadata: {
-            id: item.productId,
+            id: item.hotelId,
           },
         },
-        unit_amount: item.product_price * 100,
+        unit_amount: item.hotel_price * 100,
       },
       quantity: item.quantity,
     };
@@ -239,7 +240,7 @@ router.post("/create-checkout-session", async (req, res) => {
   res.send({ url: session.url });
 });
 
-// stripe log
+
 let endpointSecret;
 //  endpointSecret = process.env.WEBHOOK_SECRET
 router.post(
@@ -283,10 +284,10 @@ router.post(
 const createOrder = async (customer, intent, res) => {
   console.log("inside order");
   try {
-    const orderId = Date.now();
+    const bookingId = Date.now();
     const data = {
       intentId: intent.id,
-      orderId: orderId,
+      bookingId: bookingId,
       amount: intent.amount_total,
       created: intent.created,
       payment_method_types: intent.payment_method_types,
@@ -294,12 +295,12 @@ const createOrder = async (customer, intent, res) => {
       customer: intent.customer_details,
       shipping_details: intent.shipping_details,
       userId: customer.metadata.user_id,
-      items: JSON.parse(customer.metadata.cart),
+      items: JSON.parse(customer.metadata.book),
       total: customer.metadata.total,
       sts: "preparing",
     };
-    await db.collection("orders").doc(`/${orderId}/`).set(data);
-    deleteCart(customer.metadata.user_id, JSON.parse(customer.metadata.cart));
+    await db.collection("Bookings").doc(`/${bookingId}/`).set(data);
+    deleteCart(customer.metadata.user_id, JSON.parse(customer.metadata.book));
     console.log("******************************************");
     return res.status(200).send({ success: true });
   } catch (err) {
@@ -312,12 +313,12 @@ const deleteCart = async (userId, items) => {
   console.log(userId);
   console.log("**********************************************");
   items.map(async (data) => {
-    console.log("-------------inside------------", userId, data.productId);
+    console.log("-------------inside------------", userId, data.hotelId);
     await db
-      .collection("cartItems")
+      .collection("BookItems")
       .doc(`/${userId}/`)
-      .collection("items")
-      .doc(`/${data.productId}/`)
+      .collection("books")
+      .doc(`/${data.hotelId}/`)
       .delete()
       .then(() => console.log("------------success--------------"));
   });
@@ -325,10 +326,10 @@ const deleteCart = async (userId, items) => {
 
 //order
 
-router.get("/orders", async (req, res) => {
+router.get("/Bookings", async (req, res) => {
   (async () => {
     try {
-      let query = db.collection("orders");
+      let query = db.collection("Bookings");
       let response = [];
       await query.get().then((querysnap) => {
         let docs = querysnap.docs;
@@ -348,13 +349,13 @@ router.get("/orders", async (req, res) => {
 });
 
 // update the order
-router.post("/updateOrder/:order_id", async (req, res) => {
-  const order_id = req.params.order_id;
+router.post("/updateBooking/:booking_id", async (req, res) => {
+  const booking_id = req.params.booking_id;
   const sts = req.query.sts;
   try {
     const updatedItem = await db
-      .collection("orders")
-      .doc(`/${order_id}/`)
+      .collection("Bookings")
+      .doc(`/${booking_id}/`)
       .update({ sts });
       console.log(sts)
     return res.status(200).send({ success: true, data: updatedItem });
@@ -364,5 +365,4 @@ router.post("/updateOrder/:order_id", async (req, res) => {
     return res.send({ success: false, msg: `Error :,${er}` });
   }
 });
-
 module.exports = router;

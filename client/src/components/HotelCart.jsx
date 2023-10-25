@@ -7,35 +7,35 @@ import {
   HiCurrencyRupee,
 } from "../assets/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { setCartOff } from "../context/actions/displayCartAction";
-import { baseURL, getAllCartItems, increaseItemQuantity } from "../api";
-import { setCartItems } from "../context/actions/cartActions";
+import { setBookOff } from "../context/actions/displayBookActions";
+import { baseURL, getAllBookItems, increaseBookQuantity, increaseItemQuantity } from "../api";
+import { setBookItems } from "../context/actions/bookActions";
 import { alertNull, alertSuccess } from "../context/actions/alertActions";
 import axios from "axios";
 
-const Cart = () => {
+const HotelCart = () => {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
+  const book = useSelector((state) => state.book);
   const user = useSelector((state)=> state.user)
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
     let tot = 0;
-    if (cart) {
-      cart.map((data) => {
-        tot = tot + data.product_price * data.quantity;
+    if (book) {
+      book.map((data) => {
+        tot = tot + data.hotel_price * data.quantity;
         setTotal(tot);
       });
     }
-  }, [cart]);
+  }, [book]);
 
   const handelCheckOut = () => {
     const data = {
         user : user,
-        cart : cart,
+        book : book,
         total : total
     }
-    axios.post(`${baseURL}/api/products/create-checkout-session`,{ data })
+    axios.post(`${baseURL}/api/hotels/create-checkout-session`,{ data })
     .then((res)=>{
         if(res.data.url){
                 window.location.href = res.data.url;
@@ -54,11 +54,11 @@ const Cart = () => {
         <motion.i
           {...buttonClick}
           className="cursor-pointer"
-          onClick={() => dispatch(setCartOff())}
+          onClick={() => dispatch(setBookOff())}
         >
           <BiChevronsRight className="text-[50px] text-textColor" />
         </motion.i>
-        <p className="text-2xl text-headingColor font-semibold">Product Cart</p>
+        <p className="text-2xl text-headingColor font-semibold">Booking Cart</p>
         <motion.i {...buttonClick} className="cursor-pointer">
           <FcClearFilters className="text-[30px] text-textColor" />
         </motion.i>
@@ -68,16 +68,16 @@ const Cart = () => {
         className="flex-1 flex flex-col items-start justify-start rounded-t-3xl bg-zinc-900 h-full
         py-6 gap-3 relative"
       >
-        {cart && cart?.length > 0 ? (
+        {book && book?.length > 0 ? (
           <>
             <div
               className="flex flex-col w-full items-start justify-start gap-3 h-[64%]
              overflow-y-scroll scrollbar-none px-4"
             >
-              {cart &&
-                cart?.length > 0 &&
-                cart?.map((item, i) => (
-                  <CartItemCard key={i} index={i} data={item} />
+              {book &&
+                book?.length > 0 &&
+                book?.map((item, i) => (
+                  <BookItemCard key={i} index={i} data={item} />
                 ))}
             </div>
             <div
@@ -106,35 +106,35 @@ const Cart = () => {
     </motion.div>
   );
 };
-export const CartItemCard = ({ index, data }) => {
+export const BookItemCard = ({ index, data }) => {
   const [itemTotal, setItemTotal] = useState(0);
-  const cart = useSelector((state) => state.cart);
+  const book = useSelector((state) => state.book);
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  const decrementCart = (productId) => {
+  const decrementCart = (hotelId) => {
     dispatch(alertSuccess("updated to cart"));
-    increaseItemQuantity(user?.user_id, productId, "decrement").then((data) => {
-      getAllCartItems(user?.user_id).then((items) => {
-        dispatch(setCartItems(items));
+    increaseBookQuantity(user?.user_id, hotelId, "decrement").then((data) => {
+      getAllBookItems(user?.user_id).then((books) => {
+        dispatch(setBookItems(books));
         dispatch(alertNull());
       });
     });
   };
 
-  const incrementCart = (productId) => {
+  const incrementCart = (hotelId) => {
     dispatch(alertSuccess("updated to cart"));
-    increaseItemQuantity(user?.user_id, productId, "increment").then((data) => {
-      getAllCartItems(user?.user_id).then((items) => {
-        dispatch(setCartItems(items));
+    increaseBookQuantity(user?.user_id, hotelId, "increment").then((data) => {
+      getAllBookItems(user?.user_id).then((books) => {
+        dispatch(setBookItems(books));
         dispatch(alertNull());
       });
     });
   };
 
   useEffect(() => {
-    setItemTotal(data.product_price * data.quantity);
-  }, [itemTotal, cart]);
+    setItemTotal(data.hotel_price * data.quantity);
+  }, [itemTotal, book]);
   return (
     <motion.div
       key={index}
@@ -148,9 +148,9 @@ export const CartItemCard = ({ index, data }) => {
       />
       <div className="flex items-center justify-start gap-1 w-full">
         <p className="text-lg text-primary font-semibold">
-          {data?.product_name}
+          {data?.hotel_name}
           <span className="text-sm block capitalize text-gray-400">
-            {data?.product_category}
+            {data?.hotel_category}
           </span>
         </p>
         <p className="text-sm flex items-center justify-center gap-1 font-semibold text-red-400 ml-auto">
@@ -162,7 +162,7 @@ export const CartItemCard = ({ index, data }) => {
       <div className="ml-auto flex items-center justify-center gap-3">
         <motion.div
           {...buttonClick}
-          onClick={() => decrementCart(data?.productId)}
+          onClick={() => decrementCart(data?.hotelId)}
           className="w-8 h-8 flex items-center justify-center rounded-md drop-shadow-md
            bg-zinc-900 cursor-pointer"
         >
@@ -171,7 +171,7 @@ export const CartItemCard = ({ index, data }) => {
         <p className="text-lg text-primary font-semibold">{data?.quantity}</p>
         <motion.div
           {...buttonClick}
-          onClick={() => incrementCart(data?.productId)}
+          onClick={() => incrementCart(data?.hotelId)}
           className="w-8 h-8 flex items-center justify-center rounded-md drop-shadow-md
            bg-zinc-900 cursor-pointer"
         >
@@ -182,4 +182,4 @@ export const CartItemCard = ({ index, data }) => {
   );
 };
 
-export default Cart;
+export default HotelCart;

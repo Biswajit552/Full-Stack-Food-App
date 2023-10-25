@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import {motion} from "framer-motion"
 import {getAuth} from "firebase/auth"
 import {Route , Routes} from "react-router-dom"
-import { Dashboard, Login, Main } from './containers';
+import { Dashboard, DashboardHotel, Hotel, Login, Main } from './containers';
 import { useDispatch, useSelector } from 'react-redux';
 import { app } from './config/firebase.config';
-import { getAllCartItems, validateUserJWTToken } from './api';
+import { getAllBookItems, getAllCartItems, validateUserJWTToken } from './api';
 import {setUserDetails} from "./context/actions/userActions";
 import {fadeInOut} from "./animations"
 import { AboutUs, Alert, CheckOutSuccess, MainLoader, UserOrder } from './components';
 import { setCartItems } from './context/actions/cartActions';
+import { setBookItems } from './context/actions/bookActions';
 
 
 const App = () => {
@@ -32,6 +33,12 @@ const alert = useSelector(state => state.alert);
               getAllCartItems(data?.user_id).then((items)=>{
                 console.log(items)
                 dispatch(setCartItems(items));
+              });
+            }
+            if (data){
+              getAllBookItems(data?.user_id).then((books)=>{
+                console.log(books)
+                dispatch(setBookItems(books));
               });
             }
             dispatch(setUserDetails(data));
@@ -62,9 +69,12 @@ const alert = useSelector(state => state.alert);
           <Route path="/*" element={<Main/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/dashboard/*" element={<Dashboard/>} />
+          <Route path="/dashboardHotel/*" element={<DashboardHotel/>} />
           <Route path="/checkout-success/" element={<CheckOutSuccess/>} />
           <Route path="/user-orders" element={<UserOrder/>} />
           <Route path="/aboutus" element={<AboutUs/>} />
+          <Route path="/Hotel" element={<Hotel/>} />
+
 
 
 

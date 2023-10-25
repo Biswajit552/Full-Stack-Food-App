@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
-import { Cart, FilterSection, Header, Home, HomeSLider } from "../components";
+import { Cart, FilterSection, Header, Home, HomeSLider, HotelCart } from "../components";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../api";
 import { setAllProducts } from "../context/actions/productActions";
+import { getAllHotels } from "../api";
+import { setAllhotels } from "../context/actions/hotelActions";
 
 const Main = () => {
   const products = useSelector((state) => state.products);
@@ -13,6 +15,19 @@ const Main = () => {
     if(!products){
       getAllProducts().then((data)=>{
         dispatch(setAllProducts(data));
+      });
+    }
+  },[])
+  
+
+  //hotelcart
+  const hotels = useSelector((state) => state.hotels);
+  const isbook = useSelector((state) => state.isbook);
+
+  useEffect(()=>{
+    if(!hotels){
+      getAllHotels().then((data)=>{
+        dispatch(setAllhotels(data));
       });
     }
   },[])
@@ -27,6 +42,8 @@ const Main = () => {
         <FilterSection/>
       </div>
       {isCart && <Cart />}
+      {isbook && <HotelCart />}
+
     </main>
   );
 };

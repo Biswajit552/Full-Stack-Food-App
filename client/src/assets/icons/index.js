@@ -7,7 +7,7 @@ import {
     FaBook
 } from "react-icons/fa";
 import { FcGoogle,FcClearFilters } from "react-icons/fc";
-import{MdShoppingCart, MdLogout, MdSearch, MdDelete} from "react-icons/md"
+import{MdShoppingCart, MdLogout, MdSearch, MdDelete,MdHotel} from "react-icons/md"
 import {BiChevronsRight} from "react-icons/bi";
 import{HiCurrencyRupee} from "react-icons/hi2";
 import{IoFastFood, IoBasket} from "react-icons/io5";
@@ -38,5 +38,6 @@ export{
     FcClearFilters,
     FaArrowLeft,
     HiCurrencyRupee,
+    MdHotel,
 
 }
