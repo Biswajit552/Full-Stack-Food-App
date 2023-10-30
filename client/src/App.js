@@ -74,10 +74,6 @@ const alert = useSelector(state => state.alert);
           <Route path="/user-orders" element={<UserOrder/>} />
           <Route path="/aboutus" element={<AboutUs/>} />
           <Route path="/Hotel" element={<Hotel/>} />
-
-
-
-
       </Routes>
         {alert?.type && <Alert type={alert?.type} message={alert?.message} />} 
       </div>

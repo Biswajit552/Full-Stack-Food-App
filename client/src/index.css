@@ -10,10 +10,98 @@ body{
     font-family:"jost",sans-serif,system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     overflow-x: hidden;
 
+
+
+
 }
 .MuiPaper-root{
     width: 90%
 }
+
+.home{
+    background-image: url(./assets/img/b3.jpg);
+    background-size:cover;
+}
+
+  
+.container {
+    max-width: 1000px;
+    margin: 50px auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    font-family: "Acme";
+
+  }
+  
+  .untoldcoding:hover:nth-child(2) {
+    box-shadow: 10px 10px 50px rgb(15, 55, 231);
+  }
+  .untoldcoding {
+    position: relative;
+    margin: 20px 0;
+    width: 300px;
+    height: 400px;
+    background: #fff;
+    transform-style: preserve-3d;
+    transform: perspective(2000px);
+    transition: 1s;
+  }
+  
+  .untoldcoding:hover {
+    z-index: 1111;
+    transform: perspective(2000px) rotate(-10deg);
+  
+    box-shadow: 10px 10px 50px rgb(223, 62, 17);
+  }
+  
+  .untoldcoding .img-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    transform-origin: left;
+    z-index: 1;
+    transition: 1s;
+  }
+  
+  .untoldcoding .img-container img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+  
+  .untoldcoding:hover .img-container {
+    transform: rotateY(-135deg);
+  }
+  
+  .untoldcoding .untoldcoding-details {
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+    padding: 20px;
+    color: #000;
+  }
+  
+  .untoldcoding .untoldcoding-details h2 {
+    margin: 0;
+    padding: 0.5em 0;
+    text-transform: uppercase;
+    font-size: 1em;
+    color: #ed363a;
+  }
+  
+  .untoldcoding .untoldcoding-details p {
+    margin: 0;
+    padding: 0;
+    line-height: 30px;
+    font-size: 1.1em;
+  }
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
